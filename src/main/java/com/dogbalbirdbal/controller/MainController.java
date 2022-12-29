@@ -27,7 +27,7 @@ public class MainController {
 
     String url = "jdbc:postgresql://localhost:5432/GBSB_JUN";
     String user = "postgres"; //
-    String password1 = "sangjun0206"; // have to set pwd
+    String password1 = null; // have to set pwd
     static int count = 0; // variable for choice path
     @PostMapping("api/login/")
     public HashMap<String, String> login(@RequestBody UserInfo userInfo)
