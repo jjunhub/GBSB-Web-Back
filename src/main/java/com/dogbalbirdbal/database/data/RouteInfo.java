@@ -107,7 +107,7 @@ public class RouteInfo {
                 "https://map.naver.com/v5/search/%EB%82%98%ED%98%9C%EC%84%9D%EA%B1%B0%EB%A6%AC/place/1325594997?c=14141411.0155140,4475957.5498229,18.94,0,0,0,dh", "경기 수원시 팔달구 권광로188번길 25-2"));
         FoodLocation[2][0].add(new DataSet_URL("동탄호수공원", "https://t1.daumcdn.net/cfile/blog/9956B64F5EA8CDAE32",
                 "https://map.naver.com/v5/search/%EB%8F%99%ED%83%84%ED%98%B8%EC%88%98%EA%B3%B5%EC%9B%90/place/1060208994?c=14150071.1803662,4462807.1632175,18.24,0,0,0,dh&placePath=%3Fentry%253Dbmp", "경기 화성시 산척동 767"));
-        FoodLocation[2][0].add(new DataSet_URL("통탄센트럴파크", "http://www.latimes.kr/news/photo/201110/11026_10070_3820.jpg",
+        FoodLocation[2][0].add(new DataSet_URL("동탄센트럴파크", "http://www.latimes.kr/news/photo/201110/11026_10070_3820.jpg",
                 "https://map.naver.com/v5/search/%EB%8F%99%ED%83%84%EC%84%BC%ED%8A%B8%EB%9F%B4%ED%8C%8C%ED%81%AC/place/1000497464?c=14144566.9269414,4467605.4139614,17.92,0,0,0,dh&placePath=%3Fentry%253Dbmp", "경기 화성시 동탄공원로2길 22"));
         FoodLocation[2][0].add(new DataSet_URL("행궁동", "https://imgp.interpark.com/tr/fit/contents/1711/contents_1711_20220216093201_0.jpg",
                 "https://map.naver.com/v5/search/%ED%96%89%EA%B6%81%EB%8F%99/address/14138978.635378603,4478774.87929623,%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EC%88%98%EC%9B%90%EC%8B%9C%20%ED%8C%94%EB%8B%AC%EA%B5%AC%20%ED%96%89%EA%B6%81%EB%8F%99,adm?c=14139001.4436049,4478753.7760779,18.87,0,0,0,dh&isCorrectAnswer=true", "경기도 수원시 팔달구 행궁동"));

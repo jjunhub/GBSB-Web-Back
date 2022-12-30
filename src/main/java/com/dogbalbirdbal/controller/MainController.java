@@ -87,7 +87,7 @@ public class MainController {
             ResultSet resultSet1 = p1.executeQuery();
 
             while ( resultSet1.next() ) {
-                System.out.println(resultSet1.getString(1));
+                System.out.println(resultSet1.getString(1) + " mypage");
                 stringStringLinkedHashMap.put("id", resultSet1.getString(1));
                 stringStringLinkedHashMap.put("name", resultSet1.getString(2));
                 stringStringLinkedHashMap.put("email", resultSet1.getString(3));
@@ -102,7 +102,6 @@ public class MainController {
                 p3.setString(1, id);
                 ResultSet resultSet = p3.executeQuery();
                 WishContainer wishContainer = new WishContainer();
-                connection.close();
 
                 while ( resultSet.next() ) {
                     WishBox wishBox = new WishBox();
@@ -156,14 +155,14 @@ public class MainController {
                     temp[0] = temp[0].replace("사진", "");
                 StringName.add(temp[0]);
                 Location.add(temp[1]);
-                System.out.println(temp[1]);
+
                 String temp2 = t.attr("data-original");
                 int parsingindex = temp2.indexOf("?");
                 PicURL.add(temp2.substring(0, parsingindex));
             }
             for(Element k : infos){
                 String temp = k.attr("href");
-                System.out.println(temp);
+
                 Info.add("https://www.mangoplate.com/"+ temp);
             }
             for (int a = 0; a < 14; a++) {
@@ -192,13 +191,13 @@ public class MainController {
     @GetMapping("/api/crawlinghotel/{data}")
     public String crawlingController2(@PathVariable("data") String data) {
         //장소_2022-12-09_2022-12-10 방식으로 data 작성
-        System.out.println(data+"1");
         ArrayList<DataSet_URL> Hotels = new ArrayList<>();
         ArrayList<String> StringName = new ArrayList<>();
         ArrayList<String> PicURL = new ArrayList<>();
         ArrayList<String> Info = new ArrayList<>();
-        String[] urlSplit = data.split("_");
         ArrayList<String> Location = new ArrayList<>();
+        String[] urlSplit = data.split("_");
+
 
         String fullURL = "https://www.goodchoice.kr/product/result?sel_date=" + urlSplit[1] + "&sel_date2=" + urlSplit[2] + "&keyword=" + urlSplit[0];
         try {
@@ -213,8 +212,10 @@ public class MainController {
                 if(temp.contains("특급")) temp = temp.replace("특급", "");
                 if(temp.contains("가족호텔")) temp = temp.replace("가족호텔", "");
                 if(temp.contains("비지니스")) temp = temp.replace("비지   니스","");
-                if (temp.contains("★당일특가★")) temp = temp.replace("★당일특가★", "");
-                if (temp.contains("[반짝특가]")) temp = temp.replace("[반짝특가]", "");
+                if(temp.contains("★당일특가★")) temp = temp.replace("★당일특가★", "");
+                if(temp.contains("★연말특가★")) temp = temp.replace("★연말특가★", "");
+                if(temp.contains("[대규모특가]")) temp = temp.replace("★당일특가★", "");
+                if(temp.contains("[반짝특가]")) temp = temp.replace("[반짝특가]", "");
                 if(temp.contains("[특가]")) temp = temp.replace("[특가]", "");
 
                 StringName.add(temp);
@@ -253,18 +254,17 @@ public class MainController {
         if(urlSplit.length != 2) return "error";
 
         ArrayList<DataSet_URL> [][] FoodLocation = new RouteInfo().MakeRoute();
-
         int pick_location = 0, pick_theme = 0;
 
         if(urlSplit[0].equals("부산")) pick_location = 0;
         else if(urlSplit[0].equals("대구")) pick_location = 1;
         else if(urlSplit[0].equals("수원")) pick_location = 2;
 
-
         if(urlSplit[1].equals("힐링")) pick_theme = 0;
         else if(urlSplit[1].equals("음식")) pick_theme = 1;
         else if(urlSplit[1].equals("커플")) pick_theme = 2;
         else if(urlSplit[1].equals("랜덤")) pick_theme = (int)(Math.random()*3);
+
         result += "[" +FoodLocation[pick_location][pick_theme].get(count++ % 6).toString() +",";
         result += FoodLocation[pick_location][pick_theme].get(count++ % 6).toString() +",";
         result += FoodLocation[pick_location][pick_theme].get(count++ % 6).toString() + "]";
@@ -274,7 +274,6 @@ public class MainController {
     @PostMapping("api/myinfo/wishlist/")
     public String routesender(@RequestBody PlaceInfo placeInfo){
 
-        System.out.println(placeInfo.toString());
         try(Connection connect = DataBaseServiceManager.getInstance().getConnection()){
             String sql = "insert into wishlist(uid, route) values(?, ?)";
             PreparedStatement p = connect.prepareStatement(sql);
