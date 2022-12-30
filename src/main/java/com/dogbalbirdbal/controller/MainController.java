@@ -24,39 +24,31 @@ import java.util.LinkedHashMap;
 
 @RestController
 public class MainController {
-
-    String url = "jdbc:postgresql://localhost:5432/GBSB_JUN";
-    String user = "postgres"; //
-    String password1 = "sangjun0206"; // have to set pwd
     static int count = 0; // variable for choice path
     @PostMapping("api/login/")
-    public HashMap<String, String> login(@RequestBody UserInfo userInfo)
-    {
+    public HashMap<String, String> login(@RequestBody UserInfo userInfo) {
         HashMap<String, String> stringStringHashMap = new HashMap<>();
         boolean existData = false;
-        try{
-            Connection connect = DriverManager.getConnection(url, user, password1);
+
+        try (Connection connect = DataBaseServiceManager.getInstance().getConnection()) {
             String sql = "select uid, name\n" +
                     "from myuser\n" +                            // table 선택
                     "where uid = ? and password = ?";            // 조건문 uid랑 password 입력받은 값이 일치하는지
             PreparedStatement p = connect.prepareStatement(sql); // 질의문을 작성할 것을 만든다.2
             p.setString(1, userInfo.getId());       // 이게 첫번째 물음표로 이동한다.
             p.setString(2, userInfo.getPassword()); // 이게 두번째 물음표로 이동한다.
-
             ResultSet resultSet = p.executeQuery();
 
             while (resultSet.next()) {
                 stringStringHashMap.put("id", userInfo.getId());
                 stringStringHashMap.put("name", resultSet.getString(2));
                 stringStringHashMap.put("token", userInfo.getId());
+                System.out.println(userInfo.getId() + " 로그인 성공");
                 return stringStringHashMap;
             }
-
-
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        //return "id : " + userInfo.getId() + ", password " + userInfo.getPassword();
         stringStringHashMap.put("id", "fail");
         stringStringHashMap.put("token", "-1");
         return stringStringHashMap;
@@ -64,9 +56,7 @@ public class MainController {
     @PostMapping("api/signup/")
     public String signup(@RequestBody UserInfo userInfo){
 
-        try{
-            Connection connect = DriverManager.getConnection(url, user, password1);
-            //Connection connect = DataBaseServiceManager.getInstance().getConnection();
+        try(Connection connect = DataBaseServiceManager.getInstance().getConnection()){
             String sql = "insert into MyUser(uid, name, password, email) values(?, ?, ?, ?)";
             PreparedStatement p = connect.prepareStatement(sql);
             p.setString(1, userInfo.getId());
@@ -74,7 +64,6 @@ public class MainController {
             p.setString(3, userInfo.getPassword());
             p.setString(4, userInfo.getEmail());
             p.executeUpdate();
-
             System.out.println("ID: " + userInfo.getId() + " NAME: " + userInfo.getName() + "PW: " + userInfo.getPassword() + "EMAIL: " + userInfo.getEmail());
             return "id : " + userInfo.getId() + ", name : " + userInfo.getName() + ", email : " + userInfo.getEmail() + ", password " + userInfo.getPassword();
 
@@ -82,30 +71,29 @@ public class MainController {
             ex.printStackTrace();
             System.out.println("ID 중복");
         }
-        return "Duplicate"; // 이 return value를 front에서 받았을 때, 다른 메세지를 출력할 수 있도록 진행해야함. ex) 이미 사용중인 아이디입니다.
+        return "Duplicate";
     }
 
     @GetMapping("api/myinfo/{id}")
     public HashMap<String, String> myInfoControllers(@PathVariable String id) {
         LinkedHashMap<String, String> stringStringLinkedHashMap = new LinkedHashMap<>();
-        try{
-            Connection connect = DriverManager.getConnection(url, user, password1);
+
+        try(Connection connect = DataBaseServiceManager.getInstance().getConnection()){
             String sql1 = "select uid, name, email\n" +
                     "from MyUser\n" +
                     "where uid = ? ";
             PreparedStatement p1 = connect.prepareStatement(sql1);
             p1.setString(1, id);
             ResultSet resultSet1 = p1.executeQuery();
+
             while ( resultSet1.next() ) {
                 System.out.println(resultSet1.getString(1));
                 stringStringLinkedHashMap.put("id", resultSet1.getString(1));
                 stringStringLinkedHashMap.put("name", resultSet1.getString(2));
                 stringStringLinkedHashMap.put("email", resultSet1.getString(3));
             }
-
             String sql2 = "select string_to_array(route, ',') from wishlist";
             PreparedStatement p2 = connect.prepareStatement(sql2);
-            //p2.setString(1, id);
             ResultSet resultSet2 = p2.executeQuery();
 
             DataBaseServiceManager.getInstance().taskTransaction(connection -> {
@@ -113,31 +101,23 @@ public class MainController {
                 PreparedStatement p3 = connection.prepareStatement(sql3);
                 p3.setString(1, id);
                 ResultSet resultSet = p3.executeQuery();
-
                 WishContainer wishContainer = new WishContainer();
+                connection.close();
 
                 while ( resultSet.next() ) {
-
                     WishBox wishBox = new WishBox();
-
                     String route = resultSet.getString(1);
-
                     org.json.simple.parser.JSONParser jsonParser = new org.json.simple.parser.JSONParser();
 
                     try {
-
                         JSONArray jsonArray = (JSONArray) jsonParser.parse(route);
-
                         jsonArray.forEach(o -> {
                             JSONObject jsonObject = (JSONObject) o;
-
                             String name = jsonObject.get("name").toString();
                             String picURL = jsonObject.get("pic_url").toString();
                             String info = jsonObject.get("info").toString();
                             wishBox.addWishList(new WishList(name,picURL,info));
-
                         });
-
                     } catch ( Exception e ) {
                         e.printStackTrace();
                     }
@@ -152,8 +132,6 @@ public class MainController {
                     e.printStackTrace();
                 }
             });
-
-
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -172,14 +150,11 @@ public class MainController {
             Document doc = Jsoup.connect(fullURL).get();
             Elements contents = doc.select("div[class=thumb] img");
             Elements infos = doc.select("a[class=only-desktop_not]");
-
             for(Element t : contents){
                 String[] temp = t.attr("alt").split("-");
                 if(temp[0].contains("사진"))
                     temp[0] = temp[0].replace("사진", "");
-
                 StringName.add(temp[0]);
-                // split한 것의 3번째부터 마지막까지 Location에 저장
                 Location.add(temp[1]);
                 System.out.println(temp[1]);
                 String temp2 = t.attr("data-original");
@@ -191,19 +166,16 @@ public class MainController {
                 System.out.println(temp);
                 Info.add("https://www.mangoplate.com/"+ temp);
             }
-
             for (int a = 0; a < 14; a++) {
                 if(!(PicURL.get(a).equals("/"))) {
                     DataSet_URL food = new DataSet_URL(StringName.get(a), PicURL.get(a),Info.get(a), Location.get(a));
                     foods.add(food);
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //System.out.println(foods.toString());
-        //System.out.println(foods.get(count++ % foods.size()));
+
         String result = "[";
         for(int a=0; a<3; a++){
             int random = (int) (Math.random() * foods.size());
@@ -220,7 +192,7 @@ public class MainController {
     @GetMapping("/api/crawlinghotel/{data}")
     public String crawlingController2(@PathVariable("data") String data) {
         //장소_2022-12-09_2022-12-10 방식으로 data 작성
-
+        System.out.println(data+"1");
         ArrayList<DataSet_URL> Hotels = new ArrayList<>();
         ArrayList<String> StringName = new ArrayList<>();
         ArrayList<String> PicURL = new ArrayList<>();
@@ -303,8 +275,7 @@ public class MainController {
     public String routesender(@RequestBody PlaceInfo placeInfo){
 
         System.out.println(placeInfo.toString());
-        try{
-            Connection connect = DataBaseServiceManager.getInstance().getConnection();
+        try(Connection connect = DataBaseServiceManager.getInstance().getConnection()){
             String sql = "insert into wishlist(uid, route) values(?, ?)";
             PreparedStatement p = connect.prepareStatement(sql);
             p.setString(1, placeInfo.getId());
