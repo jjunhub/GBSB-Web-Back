@@ -214,7 +214,7 @@ public class MainController {
                 String temp = t.text();
                 if(temp.contains("특급")) temp = temp.replace("특급", "");
                 if(temp.contains("가족호텔")) temp = temp.replace("가족호텔", "");
-                if(temp.contains("비지니스")) temp = temp.replace("비지   니스","");
+                if(temp.contains("비지니스")) temp = temp.replace("비지니스","");
                 if(temp.contains("★당일특가★")) temp = temp.replace("★당일특가★", "");
                 if(temp.contains("★연말특가★")) temp = temp.replace("★연말특가★", "");
                 if(temp.contains("[대규모특가]")) temp = temp.replace("★당일특가★", "");
