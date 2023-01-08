@@ -18,7 +18,7 @@ import java.sql.ResultSet;
 public class CoreServerApplication {
 
     public static void main(String[] args) {
-        DataBaseServiceManager.getInstance().loadDataSource("postgres", null,
+        DataBaseServiceManager.getInstance().loadDataSource("postgres", "sangjun0206",
                 "127.0.0.1", 5432, "GBSB_JUN");
         SpringApplication.run(CoreServerApplication.class, args);
         System.out.println("테스트!");

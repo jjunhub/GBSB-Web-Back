@@ -64,7 +64,7 @@ public class MainController {
             p.setString(3, userInfo.getPassword());
             p.setString(4, userInfo.getEmail());
             p.executeUpdate();
-            System.out.println("ID: " + userInfo.getId() + " NAME: " + userInfo.getName() + "PW: " + userInfo.getPassword() + "EMAIL: " + userInfo.getEmail());
+            System.out.println("ID: " + userInfo.getId() + " NAME: " + userInfo.getName() + " PW: " + userInfo.getPassword() + " EMAIL: " + userInfo.getEmail());
             return "id : " + userInfo.getId() + ", name : " + userInfo.getName() + ", email : " + userInfo.getEmail() + ", password " + userInfo.getPassword();
 
         } catch (SQLException ex) {
@@ -198,8 +198,11 @@ public class MainController {
         ArrayList<String> Location = new ArrayList<>();
         String[] urlSplit = data.split("_");
 
+        String fullURL = "https://www.goodchoice.kr/product/result?sel_date=checkin&sel_date2=checkout&keyword=destination";
+        fullURL = fullURL.replace("checkin", urlSplit[1]);
+        fullURL = fullURL.replace("checkout", urlSplit[2]);
+        fullURL = fullURL.replace("destination", urlSplit[0]);
 
-        String fullURL = "https://www.goodchoice.kr/product/result?sel_date=" + urlSplit[1] + "&sel_date2=" + urlSplit[2] + "&keyword=" + urlSplit[0];
         try {
             Document doc = Jsoup.connect(fullURL).timeout(0).get();
             Elements text_contents = doc.select("div[class=name] strong");
