@@ -3,11 +3,10 @@ package com.dogbalbirdbal.database.data;
 import java.util.ArrayList;
 
 public class RouteInfo {
-    public ArrayList[][] MakeRoute(){
-        ArrayList[][] FoodLocation = new ArrayList[4][];
+    public static ArrayList[][] FoodLocation = new ArrayList[4][];
+    static {
         //  FoodLocation[0] = 부산, FoodLocation[1] = 대구, FoodLocation[2] = 수원
         //  FoodLocation[n][0] = 힐링, FoodLocation[n][1] = 음식, FoodLocation[n][2] = 커플
-
         FoodLocation[0] = new ArrayList[3]; // 부산
         FoodLocation[0][0] = new ArrayList<>(); // 부산 힐링
         FoodLocation[0][0].add(new DataSet_URL("감천문화마을", "https://a.cdn-hotels.com/gdcs/production132/d545/0870f01b-96ec-4854-98b6-72dfc747fa92.jpg?impolicy=fcrop&w=1600&h=1066&q=medium",
@@ -66,7 +65,7 @@ public class RouteInfo {
         FoodLocation[1][0].add(new DataSet_URL("중앙로역", "https://tour.daegu.go.kr/icms/tour/file/getImage.do?atchFileId=FILE_KOATTR_268",
                 "https://map.naver.com/v5/search/%EB%8C%80%EA%B5%AC%EC%A4%91%EC%95%99%EB%A1%9C%EC%97%AD/subway-station/40131?c=14314567.5558950,4282907.5118741,15.6,0,0,0,dh", "대구 중구 남일동"));
         FoodLocation[1][0].add(new DataSet_URL("대구 두류동", "https://cdn.imweb.me/upload/S201701015868e87bb6cc8/5c90e7af20311.png",
-                "", "대구광역시 달서구 두류동"));
+                "https://map.naver.com/v5/search/대구광역시%20달서구%20두류동/address/14311422.979517568,4280564.283408988,대구광역시%20달서구%20두류동,adm?c=14.03,0,0,0,dh&isCorrectAnswer=true", "대구광역시 달서구 두류동"));
 
 
         FoodLocation[1][1] = new ArrayList<>(); // 대구 음식
@@ -139,6 +138,10 @@ public class RouteInfo {
                 "https://map.naver.com/v5/search/%EA%B4%91%EA%B5%90%EC%B9%B4%ED%8E%98%EA%B1%B0%EB%A6%AC/place/1334830986?c=14143533.4091568,4480232.2386402,18.06,0,0,0,dh", "경기 수원시 영통구 센트럴파크로127번길 51"));
         FoodLocation[2][2].add(new DataSet_URL("광교호수공원", "https://www.suwon.go.kr/common-upload/upload/visitsuwon/2018/6/1/ce135282-8f09-4953-8cc2-03fdb60f377b.png",
                 "https://map.naver.com/v5/search/%EA%B4%91%EA%B5%90%ED%98%B8%EC%88%98%EA%B3%B5%EC%9B%90/place/20815787?c=14145224.2196391,4478556.8988009,16.81,0,0,0,dh&placePath=%3Fentry%253Dbmp", "경기 수원시 영통구 광교호수로 165"));
-        return FoodLocation;
+
+    }
+
+    public static String GetRoute(int pick_location, int pick_theme, int count){
+        return FoodLocation[pick_location][pick_theme].get(count).toString();
     }
 }
