@@ -235,7 +235,6 @@ public class MainController {
             for( Element l : Location_contents){
                 Location.add(l.text());
             }
-
             for (int a = 0; a < 10; a++) {
                 DataSet_URL hotel = new DataSet_URL(StringName.get(a), PicURL.get(a), Info.get(a), Location.get(a));
                 Hotels.add(hotel);
@@ -256,7 +255,6 @@ public class MainController {
         String[] urlSplit = destination.split(" ");
         if(urlSplit.length != 2) return "error";
 
-        ArrayList<DataSet_URL> [][] FoodLocation = new RouteInfo().MakeRoute();
         int pick_location = 0, pick_theme = 0;
 
         if(urlSplit[0].equals("부산")) pick_location = 0;
@@ -268,9 +266,9 @@ public class MainController {
         else if(urlSplit[1].equals("커플")) pick_theme = 2;
         else if(urlSplit[1].equals("랜덤")) pick_theme = (int)(Math.random()*3);
 
-        result += "[" +FoodLocation[pick_location][pick_theme].get(count++ % 6).toString() +",";
-        result += FoodLocation[pick_location][pick_theme].get(count++ % 6).toString() +",";
-        result += FoodLocation[pick_location][pick_theme].get(count++ % 6).toString() + "]";
+        result += "[" + RouteInfo.GetRoute(pick_location, pick_theme, count++ %6) +",";
+        result += RouteInfo.GetRoute(pick_location, pick_theme, count++ %6) +",";
+        result += RouteInfo.GetRoute(pick_location, pick_theme, count++ %6) + "]";
         return result;
     }
 
