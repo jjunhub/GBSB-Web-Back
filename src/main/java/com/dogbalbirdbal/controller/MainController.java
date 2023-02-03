@@ -175,17 +175,18 @@ public class MainController {
             e.printStackTrace();
         }
 
-        String result = "[";
+        StringBuffer result = new StringBuffer();
+        result.append("[");
         for(int a=0; a<3; a++){
             int random = (int) (Math.random() * foods.size());
-            if(result.contains(foods.get(random).toString())) a--;
+            if(result.toString().contains(foods.get(random).toString())) a--;
             else {
-                result += foods.get(random).toString();
-                if(a<2) result += ",";
+                result.append(foods.get(random).toString());
+                if(a<2) result.append(",");
             }
         }
-        result += "]";
-        return result;
+        result.append("]");
+        return result.toString();
     }
 
     @GetMapping("/api/crawlinghotel/{data}")
@@ -249,7 +250,7 @@ public class MainController {
     @GetMapping("api/choicepath/{destination}")
     public String choicepathController(@PathVariable("destination") String destination) {
         // 입력 예시는 "부산 힐링", "부산 식도락", "부산 오락".
-        String result = "";
+        StringBuffer result = new StringBuffer();
 
         if(destination == null)  return "empty input";
         String[] urlSplit = destination.split(" ");
@@ -266,10 +267,10 @@ public class MainController {
         else if(urlSplit[1].equals("커플")) pick_theme = 2;
         else if(urlSplit[1].equals("랜덤")) pick_theme = (int)(Math.random()*3);
 
-        result += "[" + RouteInfo.GetRoute(pick_location, pick_theme, count++ %6) +",";
-        result += RouteInfo.GetRoute(pick_location, pick_theme, count++ %6) +",";
-        result += RouteInfo.GetRoute(pick_location, pick_theme, count++ %6) + "]";
-        return result;
+        result.append("[").append(RouteInfo.GetRoute(pick_location, pick_theme, count++ % 6)).append(",");
+        result.append(RouteInfo.GetRoute(pick_location, pick_theme, count++ %6)).append(",");
+        result.append(RouteInfo.GetRoute(pick_location, pick_theme, count++ %6)).append("]");
+        return result.toString();
     }
 
     @PostMapping("api/myinfo/wishlist/")
