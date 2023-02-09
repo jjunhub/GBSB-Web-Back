@@ -18,10 +18,6 @@ public class DataSet_URL{
         return name;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
     public String getPic_url() {
         return pic_url;
     }
@@ -30,11 +26,16 @@ public class DataSet_URL{
         return info;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+
     public void setAddress(String address) {
         this.address = address;
     }
 
-    public String toString() {
-        return "{\"name\":\"" + this.name + "\", \"pic_url\":\"" + this.pic_url + "\", \"info\":\"" + this.info + "\", \"address\":\"" + this.address + "\"}";
-    }
+//    public String toString() {
+//        return "{\"name\":\"" + this.name + "\", \"pic_url\":\"" + this.pic_url + "\", \"info\":\"" + this.info + "\", \"address\":\"" + this.address + "\"}";
+//    }
 }

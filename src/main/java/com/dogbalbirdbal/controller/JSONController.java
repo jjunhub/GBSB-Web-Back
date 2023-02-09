@@ -10,26 +10,14 @@ import java.io.IOException;
 
 public class JSONController {
     public static int JSONchanger() throws IOException {
-        File fl = new File("/Users/sangjun/GBSB-Web-Back/src/main/java/com/dogbalbirdbal/controller/DataSet");
+        File fl = new File("/Users/sangjun/GBSB-Web-Back/src/main/java/com/dogbalbirdbal/controller/DataSet.txt");
         FileReader fir = new FileReader(fl);
         BufferedReader bfr = new BufferedReader(fir);
-        String input_line;
-        while((input_line = bfr.readLine())!= null) {
-            //System.out.println(input_line);
-            JSONObject jsonObject = new JSONObject(input_line);
-            System.out.println(jsonObject);
-
-            //System.out.println(jsonObject);
+        String line = "";
+        while ((line = bfr.readLine()) != null) {
+            JSONObject jsonObj = new JSONObject(line);
+            System.out.println(jsonObj.toString());
         }
-//            DataSet_URL dataset_url = new DataSet_URL();
-//        DataSet_URL dataset_url = new DataSet_URL();
-//        JSONObject jsonObj;
-//        jsonObj = new JSONObject(dataset_url);
-//        System.out.println(jsonObj.toString());
-//
-//            //parsing한거 넣기
-
-
         return 0;
     }
 }
