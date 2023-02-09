@@ -22,7 +22,7 @@ public class CoreServerApplication {
     @Value("${db.password}")
     private static String password;
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
 
         DataBaseServiceManager.getInstance().loadDataSource(id, password,
                 "127.0.0.1", 5432, "postgres");
