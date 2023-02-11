@@ -1,20 +1,13 @@
 package com.dogbalbirdbal.coreserver;
 
-import com.dogbalbirdbal.controller.JSONController;
+import com.dogbalbirdbal.database.data.RouteInfo;
 import com.dogbalbirdbal.database.manager.DataBaseServiceManager;
-import com.dogbalbirdbal.database.vo.WishBox;
-import com.dogbalbirdbal.database.vo.WishContainer;
-import com.dogbalbirdbal.database.vo.WishList;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.io.IOException;
-import java.sql.ResultSet;
 
 @SpringBootApplication
 @ComponentScan ( basePackages = {"com.dogbalbirdbal.controller"})
@@ -30,7 +23,7 @@ public class CoreServerApplication {
                 "127.0.0.1", 5432, "postgres");
         SpringApplication.run(CoreServerApplication.class, args);
         System.out.println("테스트!");
-        JSONController.JSONchanger();
+        RouteInfo rf = new RouteInfo();
     }
 
 
