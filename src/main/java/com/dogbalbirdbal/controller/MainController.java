@@ -1,22 +1,23 @@
 package com.dogbalbirdbal.controller;
 
 import com.dogbalbirdbal.database.data.DataSet_URL;
+import com.dogbalbirdbal.database.data.RouteInfo;
 import com.dogbalbirdbal.database.manager.DataBaseServiceManager;
 import com.dogbalbirdbal.database.vo.*;
-import com.dogbalbirdbal.database.data.RouteInfo;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -106,7 +107,7 @@ public class MainController {
                 while ( resultSet.next() ) {
                     WishBox wishBox = new WishBox();
                     String route = resultSet.getString(1);
-                    org.json.simple.parser.JSONParser jsonParser = new org.json.simple.parser.JSONParser();
+                    JSONParser jsonParser = new JSONParser();
 
                     try {
                         JSONArray jsonArray = (JSONArray) jsonParser.parse(route);

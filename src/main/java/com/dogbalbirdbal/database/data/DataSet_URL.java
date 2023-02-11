@@ -37,9 +37,21 @@ public class DataSet_URL{
         this.address = address;
     }
 
-//    public String toString() {
-//        return "{\"name\":\"" + this.name + "\", \"pic_url\":\"" + this.pic_url + "\", \"info\":\"" + this.info + "\", \"address\":\"" + this.address + "\"}";
-//    }
+    public void setInfo(String info) {
+        this.info = info;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPic_url(String pic_url) {
+        this.pic_url = pic_url;
+    }
+
+    public String toString() {
+        return "{\"name\":\"" + this.name + "\", \"pic_url\":\"" + this.pic_url + "\", \"info\":\"" + this.info + "\", \"address\":\"" + this.address + "\"}";
+    }
 }
 
 

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 public class RouteInfo {
     public static ArrayList[][] FoodLocation = new ArrayList[4][];
     static {
-        ArrayList[][] FoodLocation = new ArrayList[4][];
         FoodLocation[0] = new ArrayList[3]; // 부산
         FoodLocation[0][0] = new ArrayList<>(); // 부산 힐링
         FoodLocation[0][1] = new ArrayList<>(); // 부산 음식
@@ -25,7 +24,6 @@ public class RouteInfo {
         FoodLocation[2][1] = new ArrayList<>(); // 수원 음식
         FoodLocation[2][2] = new ArrayList<>(); // 수원 커플
 
-        System.out.println("RouteInfo");
         File fl = new File("src/main/java/com/dogbalbirdbal/database/data/DataSet.txt");
         BufferedReader bfr = null;
         try {
@@ -56,7 +54,6 @@ public class RouteInfo {
                 if (line.contains("힐링")) theme = 0;
                 else if (line.contains("음식")) theme = 1;
                 else if (line.contains("커플")) theme = 2;
-                System.out.println("city" + city + "theme" + theme);
                 continue;
             }
 
@@ -66,12 +63,8 @@ public class RouteInfo {
                 throw new RuntimeException(e);
             }
         }
-
-
-
-
+        System.out.println("Route Info Load Complete");
     }
-
     public static String GetRoute(int pick_location, int pick_theme, int count){
         return FoodLocation[pick_location][pick_theme].get(count).toString();
     }
