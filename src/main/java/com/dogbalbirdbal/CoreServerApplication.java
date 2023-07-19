@@ -1,14 +1,13 @@
-package com.dogbalbirdbal.coreserver;
+package com.dogbalbirdbal;
+
 import com.dogbalbirdbal.database.data.RouteInfo;
 import com.dogbalbirdbal.database.manager.DataBaseServiceManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
-
 import java.io.IOException;
+
 @SpringBootApplication
-@ComponentScan ( basePackages = {"com.dogbalbirdbal.controller"})
 public class CoreServerApplication {
     @Value("${db.username}")
     private static String id;
