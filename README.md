@@ -1,11 +1,4 @@
 # Back-End
-## **Jar List**
-
-json_simple-1.1
-
-jsoup-1.15.3
-
-HikariCP-4.0.3
 
 ## Crawling Site
 
