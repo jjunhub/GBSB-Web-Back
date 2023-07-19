@@ -38,3 +38,4 @@ application-oauth.properties
 ### Maven wrapper files
 mvnw
 mvnw.cmd
+.mvn/wrapper/*
