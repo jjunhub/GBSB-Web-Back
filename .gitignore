@@ -35,6 +35,6 @@ build/
 ### For security
 application-oauth.properties
 
-# Maven wrapper files
+### Maven wrapper files
 mvnw
 mvnw.cmd
