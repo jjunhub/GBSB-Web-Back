@@ -155,30 +155,14 @@ public class MainController {
         return crawlingService.crawlhotel(data);
     }
 
-    @GetMapping("api/choicepath/{destination}")
-    public String choicepathController(@PathVariable("destination") String destination) {
+    @GetMapping("api/choicepath/{pathInfo}")
+    public String choicepathController(@PathVariable("pathInfo") String pathInfo) {
         // 입력 예시는 "부산 힐링", "부산 식도락", "부산 오락".
-        StringBuffer result = new StringBuffer();
+        if(pathInfo.split(" ").length != 2) return "잘못된 입력입니다.";
+        String destination = pathInfo.split(" ")[0];
+        String theme = pathInfo.split(" ")[1];
 
-        if(destination == null)  return "empty input";
-        String[] urlSplit = destination.split(" ");
-        if(urlSplit.length != 2) return "error";
-
-        int pick_location = 0, pick_theme = 0;
-
-        if(urlSplit[0].equals("부산")) pick_location = 0;
-        else if(urlSplit[0].equals("대구")) pick_location = 1;
-        else if(urlSplit[0].equals("수원")) pick_location = 2;
-
-        if(urlSplit[1].equals("힐링")) pick_theme = 0;
-        else if(urlSplit[1].equals("음식")) pick_theme = 1;
-        else if(urlSplit[1].equals("커플")) pick_theme = 2;
-        else if(urlSplit[1].equals("랜덤")) pick_theme = (int)(Math.random()*3);
-
-        result.append("[").append(RouteInfo.GetRoute(pick_location, pick_theme, count++ % 6)).append(",");
-        result.append(RouteInfo.GetRoute(pick_location, pick_theme, count++ %6)).append(",");
-        result.append(RouteInfo.GetRoute(pick_location, pick_theme, count++ %6)).append("]");
-        return result.toString();
+        return crawlingService.selectPath(destination, theme);
     }
 
     @PostMapping("api/myinfo/wishlist/")

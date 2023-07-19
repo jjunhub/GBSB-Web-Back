@@ -1,6 +1,7 @@
 package com.dogbalbirdbal.service;
 
 import com.dogbalbirdbal.database.data.DataSet_URL;
+import com.dogbalbirdbal.database.data.RouteInfo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -118,6 +119,28 @@ public class CrawlingService {
         }
         String result = Hotels.get(count++ % Hotels.size()).toString();
         System.out.println(result);
+        return result;
+    }
+    public String selectPath(String destination, String theme){
+        // 입력 예시는 "부산 힐링", "부산 식도락", "부산 오락".
+        int pick_location = 0, pick_theme = 0;
+
+        switch (destination) {
+            case "부산" -> pick_location = 0;
+            case "대구" -> pick_location = 1;
+            case "수원" -> pick_location = 2;
+        }
+
+        switch (theme) {
+            case "힐링" -> pick_theme = 0;
+            case "음식" -> pick_theme = 1;
+            case "커플" -> pick_theme = 2;
+            case "랜덤" -> pick_theme = (int) (Math.random() * 3);
+        }
+
+        String result = "[" + RouteInfo.GetRoute(pick_location, pick_theme, count++ % 6) + "," +
+                RouteInfo.GetRoute(pick_location, pick_theme, count++ % 6) + "," +
+                RouteInfo.GetRoute(pick_location, pick_theme, count++ % 6) + "]";
         return result;
     }
 }
