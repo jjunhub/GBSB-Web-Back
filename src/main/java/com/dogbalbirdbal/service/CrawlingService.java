@@ -6,6 +6,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,57 +17,53 @@ import java.util.ArrayList;
 public class CrawlingService {
     static int count = 0; // variable for choice path
 
-    public String crawlfood(String location){
-        ArrayList<DataSet_URL> foods = new ArrayList<>();
-        ArrayList<String> StringName = new ArrayList<>();
-        ArrayList<String> PicURL = new ArrayList<>();
-        ArrayList<String> Info = new ArrayList<>();
-        ArrayList<String> Location = new ArrayList<>();
+    public String crawlfood(String location) {
         String fullURL = "https://www.mangoplate.com/search/" + location;
+        JSONArray jsonArray = new JSONArray();
         try {
-            Document doc = Jsoup.connect(fullURL).get();
-            Elements contents = doc.select("div[class=thumb] img");
-            Elements infos = doc.select("a[class=only-desktop_not]");
-            for(Element t : contents){
-                String[] temp = t.attr("alt").split("-");
-                if(temp[0].contains("사진"))
-                    temp[0] = temp[0].replace("사진", "");
-                StringName.add(temp[0]);
-                Location.add(temp[1]);
+            Elements restaurants = Jsoup.connect(fullURL)
+                    .get()
+                    .body()
+                    .getElementsByClass("list-restaurant-item");
+            for (Element restaurant : restaurants) {
+                String restaurantLocation = restaurant.select(".thumb img").attr("alt").split("-")[1].strip();
+                String thumbnail = restaurant.select(".thumb img").attr("data-original").split(";")[0];
+                String restaurantLink = restaurant.select(".info a").attr("abs:href");
+                String restaurantName = restaurant.select(".info a").text();
 
-                String temp2 = t.attr("data-original");
-                int parsingindex = temp2.indexOf("?");
-                PicURL.add(temp2.substring(0, parsingindex));
-            }
-            for(Element k : infos){
-                String temp = k.attr("href");
-                Info.add("https://www.mangoplate.com/"+ temp);
-            }
-            for (int a = 0; a < 14; a++) {
-                if(!(PicURL.get(a).equals("/"))) {
-                    DataSet_URL food = new DataSet_URL(StringName.get(a), PicURL.get(a),Info.get(a), Location.get(a));
-                    foods.add(food);
+                System.out.println(thumbnail);
+                if ( restaurantLocation.equals("")
+                        | thumbnail.startsWith("/?fit=around")
+                        | restaurantLink.equals("")
+                        | restaurantName.equals("")) {
+                    continue;
                 }
+                System.out.println("ok");
+
+                DataSet_URL food = new DataSet_URL(restaurantName, thumbnail, restaurantLink, restaurantLocation);
+                JSONObject jsonObject = new JSONObject(food.toString());
+                jsonArray.put(jsonObject);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        StringBuffer result = new StringBuffer();
-        result.append("[");
-        for(int a=0; a<3; a++){
-            int random = (int) (Math.random() * foods.size());
-            if(result.toString().contains(foods.get(random).toString())) a--;
-            else {
-                result.append(foods.get(random).toString());
-                if(a<2) result.append(",");
+        JSONArray returnjsonArray = new JSONArray();
+        try {
+            while(returnjsonArray.length() < 3){
+                int random = (int) (Math.random() * jsonArray.length());
+                JSONObject tempObject = jsonArray.getJSONObject(random);
+                if (!returnjsonArray.toString().contains(tempObject.toString()))
+                    returnjsonArray.put(tempObject);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        result.append("]");
-        return result.toString();
+
+        return returnjsonArray.toString();
     }
 
-    public String crawlhotel(String data){
+    public String crawlhotel(String data) {
         //장소_2022-12-09_2022-12-10 방식으로 data 작성
         ArrayList<DataSet_URL> Hotels = new ArrayList<>();
         ArrayList<String> StringName = new ArrayList<>();
