@@ -2,10 +2,12 @@ package com.dogbalbirdbal.database.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.ArrayList;
 
+@Service
 public class RouteInfo {
     public static ArrayList[][] FoodLocation = new ArrayList[4][];
     static {

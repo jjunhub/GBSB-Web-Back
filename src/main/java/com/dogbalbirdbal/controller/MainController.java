@@ -32,6 +32,9 @@ public class MainController {
     @Autowired
     CrawlingService crawlingService;
 
+    @Autowired
+    RouteInfo routeInfo;
+
     static int count = 0; // variable for choice path
     @PostMapping("api/login/")
     public HashMap<String, String> login(@RequestBody UserInfo userInfo) {

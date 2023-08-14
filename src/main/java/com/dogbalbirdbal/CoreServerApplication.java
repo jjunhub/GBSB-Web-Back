@@ -19,10 +19,6 @@ public class CoreServerApplication {
         DataBaseServiceManager.getInstance().loadDataSource(id, password,
                 "127.0.0.1", 5432, "postgres");
         SpringApplication.run(CoreServerApplication.class, args);
-        System.out.println("테스트!");
-        RouteInfo rf = new RouteInfo();
+        System.out.println("Server Start!");
     }
-
-
-
 }
