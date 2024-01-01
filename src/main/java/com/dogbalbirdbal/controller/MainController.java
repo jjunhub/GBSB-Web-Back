@@ -1,53 +1,47 @@
 package com.dogbalbirdbal.controller;
 
-import com.dogbalbirdbal.database.data.DataSet_URL;
-import com.dogbalbirdbal.database.data.RouteInfo;
 import com.dogbalbirdbal.database.manager.DataBaseServiceManager;
-import com.dogbalbirdbal.database.vo.*;
+import com.dogbalbirdbal.database.vo.PlaceInfo;
+import com.dogbalbirdbal.database.vo.UserInfo;
+import com.dogbalbirdbal.database.vo.WishBox;
+import com.dogbalbirdbal.database.vo.WishContainer;
+import com.dogbalbirdbal.database.vo.WishList;
+import com.dogbalbirdbal.service.CrawlingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-
-import com.dogbalbirdbal.service.CrawlingService;
+import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
+@RequiredArgsConstructor
 public class MainController {
 
-    @Autowired
-    CrawlingService crawlingService;
+    private final CrawlingService crawlingService;
+    private final DataBaseServiceManager dataBaseServiceManager;
 
-    @Autowired
-    RouteInfo routeInfo;
-
-    static int count = 0; // variable for choice path
     @PostMapping("api/login/")
     public HashMap<String, String> login(@RequestBody UserInfo userInfo) {
         HashMap<String, String> stringStringHashMap = new HashMap<>();
         boolean existData = false;
 
-        try (Connection connect = DataBaseServiceManager.getInstance().getConnection()) {
-            String sql = "select uid, name\n" +
-                    "from myuser\n" +                            // table 선택
-                    "where uid = ? and password = ?";            // 조건문 uid랑 password 입력받은 값이 일치하는지
-            PreparedStatement p = connect.prepareStatement(sql); // 질의문을 작성할 것을 만든다.2
-            p.setString(1, userInfo.getId());       // 이게 첫번째 물음표로 이동한다.
-            p.setString(2, userInfo.getPassword()); // 이게 두번째 물음표로 이동한다.
+        try (Connection con = dataBaseServiceManager.getConnection()) {
+            String sql = "select uid, name from myuser where uid = ? and password = ?";
+            PreparedStatement p = con.prepareStatement(sql);
+            p.setString(1, userInfo.getId());
+            p.setString(2, userInfo.getPassword());
             ResultSet resultSet = p.executeQuery();
 
             while (resultSet.next()) {
@@ -60,14 +54,16 @@ public class MainController {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+
         stringStringHashMap.put("id", "fail");
         stringStringHashMap.put("token", "-1");
         return stringStringHashMap;
     }
-    @PostMapping("api/signup/")
-    public String signup(@RequestBody UserInfo userInfo){
 
-        try(Connection connect = DataBaseServiceManager.getInstance().getConnection()){
+    @PostMapping("api/signup/")
+    public String signup(@RequestBody UserInfo userInfo) {
+
+        try (Connection connect = dataBaseServiceManager.getConnection()) {
             String sql = "insert into MyUser(uid, name, password, email) values(?, ?, ?, ?)";
             PreparedStatement p = connect.prepareStatement(sql);
             p.setString(1, userInfo.getId());
@@ -75,8 +71,11 @@ public class MainController {
             p.setString(3, userInfo.getPassword());
             p.setString(4, userInfo.getEmail());
             p.executeUpdate();
-            System.out.println("ID: " + userInfo.getId() + " NAME: " + userInfo.getName() + " PW: " + userInfo.getPassword() + " EMAIL: " + userInfo.getEmail());
-            return "id : " + userInfo.getId() + ", name : " + userInfo.getName() + ", email : " + userInfo.getEmail() + ", password " + userInfo.getPassword();
+            System.out.println(
+                    "ID: " + userInfo.getId() + " NAME: " + userInfo.getName() + " PW: " + userInfo.getPassword()
+                            + " EMAIL: " + userInfo.getEmail());
+            return "id : " + userInfo.getId() + ", name : " + userInfo.getName() + ", email : " + userInfo.getEmail()
+                    + ", password " + userInfo.getPassword();
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -86,10 +85,10 @@ public class MainController {
     }
 
     @GetMapping("api/myinfo/{id}")
-    public HashMap<String, String> myInfoControllers(@PathVariable String id) {
+    public HashMap<String, String> myInfoControllers(@PathVariable String id) throws SQLException {
         LinkedHashMap<String, String> stringStringLinkedHashMap = new LinkedHashMap<>();
 
-        try(Connection connect = DataBaseServiceManager.getInstance().getConnection()){
+        try (Connection connect = dataBaseServiceManager.getConnection()) {
             String sql1 = "select uid, name, email\n" +
                     "from MyUser\n" +
                     "where uid = ? ";
@@ -97,7 +96,7 @@ public class MainController {
             p1.setString(1, id);
             ResultSet resultSet1 = p1.executeQuery();
 
-            while ( resultSet1.next() ) {
+            while (resultSet1.next()) {
                 System.out.println(resultSet1.getString(1) + " mypage");
                 stringStringLinkedHashMap.put("id", resultSet1.getString(1));
                 stringStringLinkedHashMap.put("name", resultSet1.getString(2));
@@ -107,14 +106,14 @@ public class MainController {
             PreparedStatement p2 = connect.prepareStatement(sql2);
             ResultSet resultSet2 = p2.executeQuery();
 
-            DataBaseServiceManager.getInstance().taskTransaction(connection -> {
+            try (Connection connection2 = dataBaseServiceManager.getConnection()) {
                 String sql3 = "select route from wishlist where uid = ?";
-                PreparedStatement p3 = connection.prepareStatement(sql3);
+                PreparedStatement p3 = connection2.prepareStatement(sql3);
                 p3.setString(1, id);
                 ResultSet resultSet = p3.executeQuery();
                 WishContainer wishContainer = new WishContainer();
 
-                while ( resultSet.next() ) {
+                while (resultSet.next()) {
                     WishBox wishBox = new WishBox();
                     String route = resultSet.getString(1);
                     JSONParser jsonParser = new JSONParser();
@@ -126,9 +125,9 @@ public class MainController {
                             String name = jsonObject.get("name").toString();
                             String picURL = jsonObject.get("pic_url").toString();
                             String info = jsonObject.get("info").toString();
-                            wishBox.addWishList(new WishList(name,picURL,info));
+                            wishBox.addWishList(new WishList(name, picURL, info));
                         });
-                    } catch ( Exception e ) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     wishContainer.addWishBox(wishBox);
@@ -138,12 +137,13 @@ public class MainController {
                     ObjectMapper objectMapper = new ObjectMapper();
                     String jsonData = objectMapper.writeValueAsString(wishContainer);
                     stringStringLinkedHashMap.put("result", jsonData);
-                } catch ( Exception e ) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-            });
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return stringStringLinkedHashMap;
     }
@@ -161,7 +161,9 @@ public class MainController {
     @GetMapping("api/choicepath/{pathInfo}")
     public String choicepathController(@PathVariable("pathInfo") String pathInfo) {
         // 입력 예시는 "부산 힐링", "부산 식도락", "부산 오락".
-        if(pathInfo.split(" ").length != 2) return "잘못된 입력입니다.";
+        if (pathInfo.split(" ").length != 2) {
+            return "잘못된 입력입니다.";
+        }
         String destination = pathInfo.split(" ")[0];
         String theme = pathInfo.split(" ")[1];
 
@@ -169,9 +171,9 @@ public class MainController {
     }
 
     @PostMapping("api/myinfo/wishlist/")
-    public String routesender(@RequestBody PlaceInfo placeInfo){
+    public String routesender(@RequestBody PlaceInfo placeInfo) {
 
-        try(Connection connect = DataBaseServiceManager.getInstance().getConnection()){
+        try (Connection connect = dataBaseServiceManager.getConnection()) {
             String sql = "insert into wishlist(uid, route) values(?, ?)";
             PreparedStatement p = connect.prepareStatement(sql);
             p.setString(1, placeInfo.getId());
