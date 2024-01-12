@@ -1,6 +1,10 @@
 package com.dogbalbirdbal.database.data;
 
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class DataSet_URL{
     private String name;
     private String pic_url;
@@ -14,39 +18,6 @@ public class DataSet_URL{
         this.pic_url = pic_url;
         this.info = info;
         this.address = address;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPic_url() {
-        return pic_url;
-    }
-
-    public String getInfo() {
-        return info;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPic_url(String pic_url) {
-        this.pic_url = pic_url;
     }
 
     public String toString() {

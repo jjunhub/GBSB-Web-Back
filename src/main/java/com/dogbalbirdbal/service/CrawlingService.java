@@ -2,16 +2,14 @@ package com.dogbalbirdbal.service;
 
 import com.dogbalbirdbal.database.data.DataSet_URL;
 import com.dogbalbirdbal.database.data.RouteInfo;
+import java.util.ArrayList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 
 @Service
 public class CrawlingService {
@@ -86,14 +84,14 @@ public class CrawlingService {
 
             for (Element t : text_contents) {
                 String temp = t.text();
-                if(temp.contains("특급")) temp = temp.replace("특급", "");
-                if(temp.contains("가족호텔")) temp = temp.replace("가족호텔", "");
-                if(temp.contains("비지니스")) temp = temp.replace("비지니스","");
-                if(temp.contains("★당일특가★")) temp = temp.replace("★당일특가★", "");
-                if(temp.contains("★연말특가★")) temp = temp.replace("★연말특가★", "");
-                if(temp.contains("[대규모특가]")) temp = temp.replace("★당일특가★", "");
-                if(temp.contains("[반짝특가]")) temp = temp.replace("[반짝특가]", "");
-                if(temp.contains("[특가]")) temp = temp.replace("[특가]", "");
+                if (temp.contains("특급")) temp = temp.replace("특급", "");
+                if (temp.contains("가족호텔")) temp = temp.replace("가족호텔", "");
+                if (temp.contains("비지니스")) temp = temp.replace("비지니스", "");
+                if (temp.contains("★당일특가★")) temp = temp.replace("★당일특가★", "");
+                if (temp.contains("★연말특가★")) temp = temp.replace("★연말특가★", "");
+                if (temp.contains("[대규모특가]")) temp = temp.replace("★당일특가★", "");
+                if (temp.contains("[반짝특가]")) temp = temp.replace("[반짝특가]", "");
+                if (temp.contains("[특가]")) temp = temp.replace("[특가]", "");
 
                 StringName.add(temp);
             }
@@ -106,7 +104,7 @@ public class CrawlingService {
                 Info.add(k.attr("href"));
             }
 
-            for( Element l : Location_contents){
+            for (Element l : Location_contents) {
                 Location.add(l.text());
             }
             for (int a = 0; a < 10; a++) {
@@ -120,7 +118,8 @@ public class CrawlingService {
         System.out.println(result);
         return result;
     }
-    public String selectPath(String destination, String theme){
+
+    public String selectPath(String destination, String theme) {
         // 입력 예시는 "부산 힐링", "부산 식도락", "부산 오락".
         int pick_location = 0, pick_theme = 0;
 

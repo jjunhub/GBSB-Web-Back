@@ -5,10 +5,13 @@ import com.dogbalbirdbal.database.vo.PlaceInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 하나의 Wish Box 는 여러개의 @{@link com.dogbalbirdbal.database.vo.WishList } 를 가지고 있다
  */
+@Getter @Setter
 public class WishBox implements Serializable {
 
 
@@ -18,13 +21,5 @@ public class WishBox implements Serializable {
 
         this.wishLists.add(wishList);
 
-    }
-
-    public List<WishList> getWishLists() {
-        return wishLists;
-    }
-
-    public void setWishLists(List<WishList> wishLists) {
-        this.wishLists = wishLists;
     }
 }
