@@ -1,152 +1,123 @@
 package com.dogbalbirdbal.service;
 
-import com.dogbalbirdbal.database.manager.DataBaseServiceManager;
+import com.dogbalbirdbal.database.vo.LoginForm;
+import com.dogbalbirdbal.database.vo.LoginResponse;
 import com.dogbalbirdbal.database.vo.PlaceInfo;
 import com.dogbalbirdbal.database.vo.UserInfo;
+import com.dogbalbirdbal.database.vo.UserMyPageInfo;
 import com.dogbalbirdbal.database.vo.WishBox;
 import com.dogbalbirdbal.database.vo.WishContainer;
 import com.dogbalbirdbal.database.vo.WishList;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import lombok.RequiredArgsConstructor;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import javax.sql.DataSource;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
 public class UserService {
+    private final NamedParameterJdbcTemplate template;
 
-    private final DataBaseServiceManager dataBaseServiceManager;
+    public UserService(DataSource dataSource) {
+        this.template = new NamedParameterJdbcTemplate(dataSource);
+    }
 
-    public HashMap<String, String> login(UserInfo userInfo){
-        HashMap<String, String> stringStringHashMap = new HashMap<>();
+    public LoginResponse login(LoginForm loginForm) {
+        String sql = "select name from myuser where uid=:id and password=:password";
+        SqlParameterSource param = new BeanPropertySqlParameterSource(loginForm);
+        try {
+            String name = template.queryForObject(sql, param, String.class);
+            return LoginResponse.builder()
+                    .id(loginForm.getId())
+                    .name(name)
+                    .token(name)
+                    .build();
 
-        try (Connection con = dataBaseServiceManager.getConnection()) {
-            String sql = "select uid, name from myuser where uid = ? and password = ?";
-            PreparedStatement p = con.prepareStatement(sql);
-            p.setString(1, userInfo.getId());
-            p.setString(2, userInfo.getPassword());
-            ResultSet resultSet = p.executeQuery();
-
-            if (resultSet.next()) {
-                stringStringHashMap.put("id", userInfo.getId());
-                stringStringHashMap.put("name", resultSet.getString(2));
-                stringStringHashMap.put("token", userInfo.getId());
-                System.out.println(userInfo.getId() + " 로그인 성공");
-                return stringStringHashMap;
-            }
-        } catch (SQLException ex) {
+        } catch (DataAccessException ex) {
             ex.printStackTrace();
+            return LoginResponse.builder()
+                    .id("fail")
+                    .name("fail")
+                    .token("-1")
+                    .build();
         }
-        stringStringHashMap.put("id", "fail");
-        stringStringHashMap.put("token", "-1");
-        return stringStringHashMap;
     }
 
     public String signUp(UserInfo userInfo) {
-        try (Connection connect = dataBaseServiceManager.getConnection()) {
-            String sql = "insert into MyUser(uid, name, password, email) values(?, ?, ?, ?)";
-            PreparedStatement p = connect.prepareStatement(sql);
-            p.setString(1, userInfo.getId());
-            p.setString(2, userInfo.getName());
-            p.setString(3, userInfo.getPassword());
-            p.setString(4, userInfo.getEmail());
-            p.executeUpdate();
-            System.out.println(
-                    "ID: " + userInfo.getId() + " NAME: " + userInfo.getName() + " PW: " + userInfo.getPassword()
-                            + " EMAIL: " + userInfo.getEmail());
-            return "id : " + userInfo.getId() + ", name : " + userInfo.getName() + ", email : " + userInfo.getEmail()
-                    + ", password " + userInfo.getPassword();
-
-        } catch (SQLException ex) {
+        String sql = "insert into MyUser(uid, name, password, email) values(:id, :name, :password, :email)";
+        SqlParameterSource param = new BeanPropertySqlParameterSource(userInfo);
+        try {
+            template.update(sql, param);
+            return userInfo.getName() + "님 회원가입을 축하합니다.";
+        } catch (DataAccessException ex) {
             ex.printStackTrace();
             System.out.println("ID 중복");
+            return "Duplicate";
         }
-        return "Duplicate";
     }
 
-    public HashMap<String, String> myInfo(String id) {
-        LinkedHashMap<String, String> stringStringLinkedHashMap = new LinkedHashMap<>();
+    public UserMyPageInfo myInfo(String id) {
+        UserMyPageInfo userMyPageInfo = new UserMyPageInfo();
 
-        try (Connection connect = dataBaseServiceManager.getConnection()) {
-            String sql1 = "select uid, name, email\n" +
-                    "from MyUser\n" +
-                    "where uid = ? ";
-            PreparedStatement p1 = connect.prepareStatement(sql1);
-            p1.setString(1, id);
-            ResultSet resultSet1 = p1.executeQuery();
+        String sql1 = "SELECT uid, name, email FROM MyUser WHERE uid = :id";
+        Map<String, Object> paramMap = Collections.singletonMap("id", id);
+        try {
+            Map<String, Object> result = template.queryForMap(sql1, paramMap);
+            userMyPageInfo.setId((String) result.get("uid"));
+            userMyPageInfo.setName((String) result.get("name"));
+            userMyPageInfo.setEmail((String) result.get("email"));
+        } catch (EmptyResultDataAccessException ex) {
+            ex.printStackTrace();
+            return null;
+        }
 
-            while (resultSet1.next()) {
-                System.out.println(resultSet1.getString(1) + " mypage");
-                stringStringLinkedHashMap.put("id", resultSet1.getString(1));
-                stringStringLinkedHashMap.put("name", resultSet1.getString(2));
-                stringStringLinkedHashMap.put("email", resultSet1.getString(3));
-            }
-            String sql2 = "select string_to_array(route, ',') from wishlist";
-            PreparedStatement p2 = connect.prepareStatement(sql2);
-            ResultSet resultSet2 = p2.executeQuery();
-
-            try (Connection connection2 = dataBaseServiceManager.getConnection()) {
-                String sql3 = "select route from wishlist where uid = ?";
-                PreparedStatement p3 = connection2.prepareStatement(sql3);
-                p3.setString(1, id);
-                ResultSet resultSet = p3.executeQuery();
-                WishContainer wishContainer = new WishContainer();
-
-                while (resultSet.next()) {
-                    WishBox wishBox = new WishBox();
-                    String route = resultSet.getString(1);
-                    JSONParser jsonParser = new JSONParser();
-
-                    try {
-                        JSONArray jsonArray = (JSONArray) jsonParser.parse(route);
-                        jsonArray.forEach(o -> {
-                            JSONObject jsonObject = (JSONObject) o;
-                            String name = jsonObject.get("name").toString();
-                            String picURL = jsonObject.get("pic_url").toString();
-                            String info = jsonObject.get("info").toString();
-                            wishBox.addWishList(new WishList(name, picURL, info));
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    wishContainer.addWishBox(wishBox);
-                }
+        String sql2 = "SELECT route FROM wishlist WHERE uid = :id";
+        try {
+            List<Map<String, Object>> rows = template.queryForList(sql2, paramMap);
+            WishContainer wishContainer = new WishContainer();
+            for (Map<String, Object> row : rows) {
+                String route = (String) row.get("route");
+                JSONParser jsonParser = new JSONParser();
 
                 try {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    String jsonData = objectMapper.writeValueAsString(wishContainer);
-                    stringStringLinkedHashMap.put("result", jsonData);
-                } catch (Exception e) {
+                    JSONArray jsonArray = (JSONArray) jsonParser.parse(route);
+                    WishBox wishBox = new WishBox();
+                    for (Object o : jsonArray) {
+                        JSONObject jsonObject = (JSONObject) o;
+                        String name = jsonObject.get("name").toString();
+                        String picURL = jsonObject.get("pic_url").toString();
+                        String info = jsonObject.get("info").toString();
+                        WishList wishList = new WishList(name, picURL, info);
+                        wishBox.addWishList(wishList);
+                    }
+                    wishContainer.addWishBox(wishBox);
+                } catch (ParseException e) {
                     e.printStackTrace();
+                    return null;
                 }
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            userMyPageInfo.setWishContainer(wishContainer);
+        } catch (DataAccessException ex) {
+            ex.printStackTrace();
+            return null;
         }
-        return stringStringLinkedHashMap;
+        return userMyPageInfo;
     }
 
+
     public String addRoute(PlaceInfo placeInfo) {
-
-        try (Connection connect = dataBaseServiceManager.getConnection()) {
-            String sql = "insert into wishlist(uid, route) values(?, ?)";
-            PreparedStatement p = connect.prepareStatement(sql);
-            p.setString(1, placeInfo.getId());
-            p.setString(2, placeInfo.getRoute());
-            p.executeUpdate();
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+        String sql = "insert into wishlist(uid, route) values(:id, :route)";
+        SqlParameterSource param = new BeanPropertySqlParameterSource(placeInfo);
+        template.update(sql, param);
         return "id : " + placeInfo.getId() + ", route " + placeInfo.getRoute();
     }
 }

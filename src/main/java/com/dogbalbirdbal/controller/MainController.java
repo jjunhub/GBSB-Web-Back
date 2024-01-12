@@ -1,10 +1,12 @@
 package com.dogbalbirdbal.controller;
 
+import com.dogbalbirdbal.database.vo.LoginForm;
+import com.dogbalbirdbal.database.vo.LoginResponse;
 import com.dogbalbirdbal.database.vo.PlaceInfo;
 import com.dogbalbirdbal.database.vo.UserInfo;
+import com.dogbalbirdbal.database.vo.UserMyPageInfo;
 import com.dogbalbirdbal.service.CrawlingService;
 import com.dogbalbirdbal.service.UserService;
-import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,8 +23,8 @@ public class MainController {
     private final UserService userService;
 
     @PostMapping("/api/login")
-    public HashMap<String, String> login(@RequestBody UserInfo userInfo) {
-        return userService.login(userInfo);
+    public LoginResponse login(@RequestBody LoginForm loginForm) {
+        return userService.login(loginForm);
     }
 
     @PostMapping("/api/signup")
@@ -31,7 +33,7 @@ public class MainController {
     }
 
     @GetMapping("/api/myinfo/{id}")
-    public HashMap<String, String> myInfo(@PathVariable String id){
+    public UserMyPageInfo myInfo(@PathVariable String id){
         return userService.myInfo(id);
     }
 

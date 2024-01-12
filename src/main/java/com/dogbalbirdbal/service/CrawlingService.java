@@ -2,16 +2,14 @@ package com.dogbalbirdbal.service;
 
 import com.dogbalbirdbal.database.data.DataSet_URL;
 import com.dogbalbirdbal.database.data.RouteInfo;
+import java.util.ArrayList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 
 @Service
 public class CrawlingService {
